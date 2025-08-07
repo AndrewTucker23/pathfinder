@@ -3,18 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>PathFinder</title>
-
-  <!-- Leaflet & Plugins -->
+  <title>PathFinder - Accessible Route Planner</title>
+  <link rel="stylesheet" href="style.css"/>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <link rel="stylesheet" href="https://unpkg.com/leaflet-geosearch@3.11.0/dist/geosearch.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.min.js"></script>
-  <script src="https://unpkg.com/lrm-openrouteservice/dist/lrm-openrouteservice.min.js"></script>
-  <script src="https://unpkg.com/leaflet-geosearch@3.11.0/dist/bundle.min.js"></script>
-
-  <!-- Custom CSS -->
-  <link rel="stylesheet" href="style.css" />
+  <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+  <script src="https://unpkg.com/leaflet-routing-machine-openrouteservice/dist/lrm-openrouteservice.js"></script>
+  <script src="https://unpkg.com/@geosearch/core@latest"></script>
+  <script src="https://unpkg.com/@geosearch/openstreetmap@latest"></script>
 </head>
 <body>
   <header>
@@ -22,18 +18,17 @@
     <p>Accessible Route Planner for People with Mobility Challenges</p>
   </header>
 
-  <div id="controls">
-    <div class="input-wrapper">
-      <input id="start" type="text" placeholder="Start location" />
-    </div>
-    <div class="input-wrapper">
-      <input id="end" type="text" placeholder="End location" />
-    </div>
+  <div class="controls">
+    <input type="text" id="start" placeholder="Start Location" />
+    <input type="text" id="end" placeholder="End Location" />
     <button id="routeBtn">Get Route</button>
-
+    
+    <!-- Corrected travel mode options -->
     <select id="travelMode">
       <option value="foot-walking">Walking</option>
       <option value="wheelchair">Wheelchair</option>
+      <option value="driving-car">Driving</option>
+      <option value="cycling-regular">Cycling</option>
     </select>
 
     <button id="accessBtn">Show Accessibility Markers</button>
@@ -41,7 +36,6 @@
 
   <div id="map"></div>
 
-  <!-- Custom JS -->
   <script src="script.js"></script>
 </body>
 </html>
