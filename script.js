@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
-  const apiKey = "eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6Ijg1MGJhZDI3MmU4MjQwMjJiMWJjMzA2Nzc2ZGYzYzJjIiwiaCI6Im11cm11cjY0In0="; // Replace with your actual ORS key
+  const apiKey = "eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6Ijg1MGJhZDI3MmU4MjQwMjJiMWJjMzA2Nzc2ZGYzYzJjIiwiaCI6Im11cm11cjY0In0="; // Replace with your ORS key
 
   const map = L.map("map").setView([45.4215, -75.6972], 14);
 
@@ -8,12 +8,15 @@ document.addEventListener("DOMContentLoaded", function () {
       '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
   }).addTo(map);
 
-  // Add geocoder (search bar)
+  // Add geocoder (optional, for future use)
   L.Control.geocoder().addTo(map);
 
-  // Routing control using ORS
+  // Add routing control with predefined waypoints (test route)
   const control = L.Routing.control({
-    waypoints: [],
+    waypoints: [
+      L.latLng(45.4204, -75.6924), // Parliament Hill
+      L.latLng(45.4270, -75.6906), // ByWard Market
+    ],
     routeWhileDragging: true,
     geocoder: L.Control.Geocoder.nominatim(),
     router: new L.Routing.ORS({
@@ -24,22 +27,4 @@ document.addEventListener("DOMContentLoaded", function () {
       },
     }),
   }).addTo(map);
-
-  let clickCount = 0;
-  let tempWaypoints = [];
-
-  // Add click-to-set-start/end points
-  map.on("click", function (e) {
-    const { lat, lng } = e.latlng;
-
-    if (clickCount === 0) {
-      tempWaypoints[0] = L.latLng(lat, lng);
-      clickCount++;
-      alert("Start point set. Click again to set destination.");
-    } else if (clickCount === 1) {
-      tempWaypoints[1] = L.latLng(lat, lng);
-      control.setWaypoints(tempWaypoints);
-      clickCount = 0; // Reset for next use
-    }
-  });
 });
