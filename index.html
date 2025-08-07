@@ -2,54 +2,99 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>PathFinder</title>
 
   <!-- Leaflet CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <!-- Routing Machine CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
-  <!-- Control Geocoder CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <!-- Leaflet Routing Machine CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css"/>
   <!-- GeoSearch CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet-geosearch@3.1.0/dist/geosearch.css" />
-  <!-- Custom CSS -->
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-geosearch@3.1.0/dist/geosearch.css"/>
+  <!-- Your Custom CSS -->
+  <link rel="stylesheet" href="style.css"/>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+    }
+
+    header {
+      background-color: #007BFF;
+      color: white;
+      text-align: center;
+      padding: 1.5rem 1rem;
+    }
+
+    .input-container {
+      padding: 10px;
+      text-align: center;
+      background-color: white;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      z-index: 1000;
+    }
+
+    .input-container input, .input-container select, .input-container button {
+      margin: 5px;
+      padding: 8px;
+      font-size: 14px;
+    }
+
+    #map {
+      width: 100%;
+      height: 85vh;
+    }
+
+    ul.suggestions {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      background: white;
+      border: 1px solid #ccc;
+      position: absolute;
+      z-index: 9999;
+      width: 250px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    ul.suggestions li {
+      padding: 8px;
+      cursor: pointer;
+    }
+
+    ul.suggestions li:hover {
+      background-color: #f0f0f0;
+    }
+  </style>
 </head>
 <body>
+
   <header>
     <h1>PathFinder</h1>
     <p>Accessible Route Planner for People with Mobility Challenges</p>
   </header>
 
-  <!-- Input Controls -->
   <div class="input-container">
-    <div class="input-box">
-      <input type="text" id="start" placeholder="Start Location" />
-    </div>
-    <div class="input-box">
-      <input type="text" id="end" placeholder="End Location" />
-    </div>
+    <input type="text" id="start" placeholder="Start Location"/>
+    <input type="text" id="end" placeholder="End Location"/>
     <button id="routeBtn">Get Route</button>
-    <button id="showPOIsBtn">Show Accessible Places</button>
+    <button id="accessBtn">Show Accessibility Markers</button>
+    <!-- Travel mode dropdown is created by JS -->
   </div>
 
-  <!-- Map -->
-  <main>
-    <div id="map">Loading map...</div>
-  </main>
+  <div id="map">Loading map...</div>
 
   <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <!-- Routing Machine JS -->
+  <!-- Routing Machine -->
   <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.min.js"></script>
-  <!-- ORS plugin -->
+  <!-- ORS Plugin -->
   <script src="https://unpkg.com/lrm-ors/dist/lrm-ors.min.js"></script>
-  <!-- Control Geocoder -->
-  <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
   <!-- GeoSearch -->
   <script src="https://unpkg.com/leaflet-geosearch@3.1.0/dist/bundle.min.js"></script>
-  <!-- Your JS -->
+  <!-- Your Script -->
   <script src="script.js"></script>
 </body>
 </html>
