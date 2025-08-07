@@ -8,10 +8,10 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
 // Routing control instance
 let control;
 
-// Geocoder
+// GeoSearch (bounded to Ottawa)
 const provider = new window.GeoSearch.OpenStreetMapProvider({
   params: {
-    viewbox: "-75.9,45.5,-75.4,45.2", // Ottawa bounding box
+    viewbox: "-75.9,45.5,-75.4,45.2",
     bounded: 1,
   },
 });
@@ -19,14 +19,16 @@ const provider = new window.GeoSearch.OpenStreetMapProvider({
 const startInput = document.getElementById("start");
 const endInput = document.getElementById("end");
 
-// Add autocomplete to both inputs
+// Autocomplete functionality
 ["start", "end"].forEach((id) => {
   const input = document.getElementById(id);
   input.addEventListener("input", async () => {
     const results = await provider.search({ query: input.value });
     closeSuggestions(id);
+
     const list = document.createElement("ul");
     list.className = "suggestions";
+
     results.forEach((result) => {
       const item = document.createElement("li");
       item.textContent = result.label;
@@ -36,7 +38,8 @@ const endInput = document.getElementById("end");
       });
       list.appendChild(item);
     });
-    input.insertAdjacentElement("afterend", list);
+
+    input.parentNode.appendChild(list);
   });
 });
 
@@ -45,7 +48,7 @@ function closeSuggestions(id) {
   existing.forEach((el) => el.remove());
 }
 
-// Route generation
+// Get Route Button
 document.getElementById("routeBtn").addEventListener("click", async () => {
   const start = startInput.value;
   const end = endInput.value;
@@ -73,7 +76,7 @@ document.getElementById("routeBtn").addEventListener("click", async () => {
     routeWhileDragging: false,
     router: new L.Routing.OpenRouteService({
       serviceUrl: "https://api.openrouteservice.org/v2/directions",
-      apiKey: "eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6Ijg1MGJhZDI3MmU4MjQwMjJiMWJjMzA2Nzc2ZGYzYzJjIiwiaCI6Im11cm11cjY0In0=", // ⬅️ Replace this with your actual OpenRouteService key
+      apiKey: "eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6Ijg1MGJhZDI3MmU4MjQwMjJiMWJjMzA2Nzc2ZGYzYzJjIiwiaCI6Im11cm11cjY0In0=", // ← Replace with your actual API key
       profile: mode,
     }),
   }).addTo(map);
@@ -113,7 +116,7 @@ document.getElementById("routeBtn").addEventListener("click", async () => {
   });
 });
 
-// Show all wheelchair markers on map
+// Show wheelchair accessibility markers
 document.getElementById("accessBtn").addEventListener("click", async () => {
   const bounds = map.getBounds();
   const bbox = `${bounds.getSouth()},${bounds.getWest()},${bounds.getNorth()},${bounds.getEast()}`;
@@ -126,6 +129,7 @@ document.getElementById("accessBtn").addEventListener("click", async () => {
     );
     out center;
   `;
+
   const url = "https://overpass-api.de/api/interpreter?data=" + encodeURIComponent(query);
   const response = await fetch(url);
   const data = await response.json();
