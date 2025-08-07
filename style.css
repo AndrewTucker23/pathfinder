@@ -1,17 +1,51 @@
-
-body {
+/* Reset some default margins and paddings */
+* {
   margin: 0;
-  font-family: Arial, sans-serif;
-  background-color: #f4f4f4;
+  padding: 0;
+  box-sizing: border-box;
 }
+
+/* Make sure html and body take up the full screen */
+html, body {
+  height: 100%;
+  font-family: Arial, sans-serif;
+}
+
+/* Layout setup */
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header styling */
 header {
-  background: #007acc;
+  background-color: #0077cc;
   color: white;
-  padding: 1em;
+  padding: 20px;
   text-align: center;
 }
+
+header h1 {
+  font-size: 2em;
+  margin-bottom: 8px;
+}
+
+header p {
+  font-size: 1em;
+}
+
+/* Main map container */
+main {
+  flex-grow: 1;
+}
+
 #map {
-  height: 90vh;
   width: 100%;
-  background: #ccc;
+  height: 100%;
+  z-index: 0;
+}
+
+/* Leaflet Geocoder positioning fix if needed */
+.leaflet-control-geocoder-form input {
+  width: 200px;
 }
