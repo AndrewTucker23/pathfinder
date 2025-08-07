@@ -6,80 +6,15 @@
   <title>PathFinder</title>
 
   <!-- Leaflet & Plugins -->
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-  />
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet-geosearch@3.11.0/dist/geosearch.css"
-  />
-  <script
-    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-  ></script>
-  <script
-    src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.min.js"
-  ></script>
-  <script
-    src="https://unpkg.com/lrm-openrouteservice/dist/lrm-openrouteservice.min.js"
-  ></script>
-  <script
-    src="https://unpkg.com/leaflet-geosearch@3.11.0/dist/bundle.min.js"
-  ></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-geosearch@3.11.0/dist/geosearch.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.min.js"></script>
+  <script src="https://unpkg.com/lrm-openrouteservice/dist/lrm-openrouteservice.min.js"></script>
+  <script src="https://unpkg.com/leaflet-geosearch@3.11.0/dist/bundle.min.js"></script>
 
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-    }
-
-    header {
-      background-color: #007bff;
-      color: white;
-      padding: 1rem;
-      text-align: center;
-    }
-
-    #controls {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      padding: 1rem;
-      gap: 10px;
-    }
-
-    input, select, button {
-      padding: 8px;
-      font-size: 14px;
-    }
-
-    .suggestions {
-      position: absolute;
-      z-index: 9999;
-      background: white;
-      border: 1px solid #ccc;
-      list-style: none;
-      margin: 0;
-      padding: 0;
-      max-height: 150px;
-      overflow-y: auto;
-      width: 300px;
-    }
-
-    .suggestions li {
-      padding: 5px 10px;
-      cursor: pointer;
-    }
-
-    .suggestions li:hover {
-      background-color: #eee;
-    }
-
-    #map {
-      width: 100%;
-      height: 80vh;
-    }
-  </style>
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <header>
@@ -88,8 +23,12 @@
   </header>
 
   <div id="controls">
-    <input id="start" type="text" placeholder="Start location" />
-    <input id="end" type="text" placeholder="End location" />
+    <div class="input-wrapper">
+      <input id="start" type="text" placeholder="Start location" />
+    </div>
+    <div class="input-wrapper">
+      <input id="end" type="text" placeholder="End location" />
+    </div>
     <button id="routeBtn">Get Route</button>
 
     <select id="travelMode">
@@ -102,6 +41,7 @@
 
   <div id="map"></div>
 
+  <!-- Custom JS -->
   <script src="script.js"></script>
 </body>
 </html>
