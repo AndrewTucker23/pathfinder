@@ -1,51 +1,63 @@
-/* Reset some default margins and paddings */
-* {
+/* Global page styles */
+body, html {
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
-}
-
-/* Make sure html and body take up the full screen */
-html, body {
   height: 100%;
   font-family: Arial, sans-serif;
 }
 
-/* Layout setup */
-body {
-  display: flex;
-  flex-direction: column;
-}
-
-/* Header styling */
+/* Header section */
 header {
   background-color: #0077cc;
   color: white;
-  padding: 20px;
   text-align: center;
+  padding: 1rem 0;
 }
 
-header h1 {
-  font-size: 2em;
-  margin-bottom: 8px;
+h1 {
+  margin: 0;
+  font-size: 2rem;
 }
 
-header p {
-  font-size: 1em;
+p {
+  margin: 0.25rem 0 0;
+  font-size: 1rem;
 }
 
-/* Main map container */
-main {
-  flex-grow: 1;
-}
-
+/* Map container */
 #map {
+  height: calc(100vh - 120px); /* Full height minus header */
   width: 100%;
-  height: 100%;
-  z-index: 0;
 }
 
-/* Leaflet Geocoder positioning fix if needed */
-.leaflet-control-geocoder-form input {
-  width: 200px;
+/* Make sure the search control is more visible */
+.leaflet-control-geocoder {
+  font-size: 16px;
+  background-color: white;
+  padding: 10px;
+  border-radius: 6px;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Enlarge the magnifying glass icon */
+.leaflet-control-geocoder-icon {
+  font-size: 24px !important;
+  width: 28px !important;
+  height: 28px !important;
+  background-size: 24px 24px !important;
+}
+
+/* Optional: style the input for usability */
+.leaflet-control-geocoder input {
+  font-size: 14px;
+  padding: 6px 8px;
+  width: 180px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* Optional: reposition the search bar if needed */
+.leaflet-top.leaflet-right {
+  top: 10px;
+  right: 10px;
 }
