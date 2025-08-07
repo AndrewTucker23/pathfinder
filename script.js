@@ -99,5 +99,3 @@ endSearch.on('results', function (data) {
     document.getElementById('end').value = data.results[0].label;
   }
 });
-
-});
