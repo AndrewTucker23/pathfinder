@@ -71,11 +71,9 @@ document.getElementById("routeBtn").addEventListener("click", async () => {
   control = L.Routing.control({
     waypoints: [startCoord, endCoord],
     routeWhileDragging: false,
-    router: new L.Routing.OpenRouteService({
-      serviceUrl: "https://api.openrouteservice.org/v2/directions",
-      apiKey: "eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6Ijg1MGJhZDI3MmU4MjQwMjJiMWJjMzA2Nzc2ZGYzYzJjIiwiaCI6Im11cm11cjY0In0=", // Replace with your actual key
-      profile: mode,
-    }),
+   router: L.Routing.openrouteservice("eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6Ijg1MGJhZDI3MmU4MjQwMjJiMWJjMzA2Nzc2ZGYzYzJjIiwiaCI6Im11cm11cjY0In0=", {
+  profile: mode
+}),
   }).addTo(map);
 
   // Accessibility info popup
