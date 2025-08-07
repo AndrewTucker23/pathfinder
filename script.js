@@ -5,25 +5,13 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
   maxZoom: 19,
 }).addTo(map);
 
-// Routing control
+// Routing control instance
 let control;
 
-// Create dropdown for travel mode
-const modeSelect = document.createElement("select");
-modeSelect.id = "travelMode";
-modeSelect.style.marginLeft = "10px";
-["foot-walking", "wheelchair"].forEach(mode => {
-  const option = document.createElement("option");
-  option.value = mode;
-  option.text = mode === "foot-walking" ? "Walking" : "Wheelchair";
-  modeSelect.appendChild(option);
-});
-document.getElementById("routeBtn").after(modeSelect);
-
-// Geocoder setup
+// Geocoder
 const provider = new window.GeoSearch.OpenStreetMapProvider({
   params: {
-    viewbox: "-75.9,45.5,-75.4,45.2",
+    viewbox: "-75.9,45.5,-75.4,45.2", // Ottawa bounding box
     bounded: 1,
   },
 });
@@ -31,6 +19,7 @@ const provider = new window.GeoSearch.OpenStreetMapProvider({
 const startInput = document.getElementById("start");
 const endInput = document.getElementById("end");
 
+// Add autocomplete to both inputs
 ["start", "end"].forEach((id) => {
   const input = document.getElementById(id);
   input.addEventListener("input", async () => {
@@ -56,7 +45,7 @@ function closeSuggestions(id) {
   existing.forEach((el) => el.remove());
 }
 
-// Route planning
+// Route generation
 document.getElementById("routeBtn").addEventListener("click", async () => {
   const start = startInput.value;
   const end = endInput.value;
@@ -82,15 +71,12 @@ document.getElementById("routeBtn").addEventListener("click", async () => {
   control = L.Routing.control({
     waypoints: [startCoord, endCoord],
     routeWhileDragging: false,
-    router: L.Routing.openrouteservice(
-      "eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6Ijg1MGJhZDI3MmU4MjQwMjJiMWJjMzA2Nzc2ZGYzYzJjIiwiaCI6Im11cm11cjY0In0=", // Replace with your real key
-      {
-        profile: mode,
-      }
-    ),
+    router: L.Routing.openrouteservice("eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6Ijg1MGJhZDI3MmU4MjQwMjJiMWJjMzA2Nzc2ZGYzYzJjIiwiaCI6Im11cm11cjY0In0=", {
+      profile: mode,
+    }),
   }).addTo(map);
 
-  // Add accessibility info popups at start and end
+  // Add accessibility popups at start and end
   [startCoord, endCoord].forEach(async (coord) => {
     const response = await fetch(
       `https://overpass-api.de/api/interpreter?data=[out:json];is_in(${coord.lat},${coord.lng})->.a;node(pivot.a);out body;`
@@ -125,7 +111,7 @@ document.getElementById("routeBtn").addEventListener("click", async () => {
   });
 });
 
-// Show accessibility markers
+// Show all wheelchair markers on map
 document.getElementById("accessBtn").addEventListener("click", async () => {
   const bounds = map.getBounds();
   const bbox = `${bounds.getSouth()},${bounds.getWest()},${bounds.getNorth()},${bounds.getEast()}`;
