@@ -1,174 +1,159 @@
-const map = L.map('map').setView([45.4215, -75.6972], 13);
+const map = L.map("map").setView([45.4215, -75.6998], 14);
 
-// Base map
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  attribution: '&copy; OpenStreetMap contributors'
+// Basemap
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  maxZoom: 19,
 }).addTo(map);
 
-// Replace with your OpenRouteService API key
-const apiKey = 'eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6Ijg1MGJhZDI3MmU4MjQwMjJiMWJjMzA2Nzc2ZGYzYzJjIiwiaCI6Im11cm11cjY0In0='; // Replace this before deploying
+// Routing control
+let control;
 
-let routeLayer;
+// Create dropdown for travel mode
+const modeSelect = document.createElement("select");
+modeSelect.id = "travelMode";
+modeSelect.style.marginLeft = "10px";
+["foot-walking", "wheelchair"].forEach(mode => {
+  const option = document.createElement("option");
+  option.value = mode;
+  option.text = mode === "foot-walking" ? "Walking" : "Wheelchair";
+  modeSelect.appendChild(option);
+});
+document.getElementById("routeBtn").after(modeSelect);
 
-// === Autocomplete ===
-const { OpenStreetMapProvider } = window.GeoSearch;
-const provider = new OpenStreetMapProvider({
+// Geocoder setup
+const provider = new window.GeoSearch.OpenStreetMapProvider({
   params: {
-    viewbox: '-75.9,45.6,-75.5,45.3',
+    viewbox: "-75.9,45.5,-75.4,45.2",
     bounded: 1,
-    countrycodes: 'ca'
-  }
+  },
 });
 
-function setupAutocomplete(id) {
+const startInput = document.getElementById("start");
+const endInput = document.getElementById("end");
+
+["start", "end"].forEach((id) => {
   const input = document.getElementById(id);
-  input.addEventListener('input', async () => {
+  input.addEventListener("input", async () => {
     const results = await provider.search({ query: input.value });
-    showSuggestions(results, input);
+    closeSuggestions(id);
+    const list = document.createElement("ul");
+    list.className = "suggestions";
+    results.forEach((result) => {
+      const item = document.createElement("li");
+      item.textContent = result.label;
+      item.addEventListener("click", () => {
+        input.value = result.label;
+        closeSuggestions(id);
+      });
+      list.appendChild(item);
+    });
+    input.parentNode.appendChild(list);
   });
+});
+
+function closeSuggestions(id) {
+  const existing = document.querySelectorAll(`#${id} + ul.suggestions`);
+  existing.forEach((el) => el.remove());
 }
 
-function showSuggestions(results, input) {
-  let dropdown = document.getElementById(`${input.id}-suggestions`);
-  if (!dropdown) {
-    dropdown = document.createElement('div');
-    dropdown.id = `${input.id}-suggestions`;
-    dropdown.className = 'suggestions-box';
-    input.parentNode.appendChild(dropdown);
-  }
-  dropdown.innerHTML = '';
-  results.forEach(result => {
-    const item = document.createElement('div');
-    item.textContent = result.label;
-    item.onclick = () => {
-      input.value = result.label;
-      dropdown.innerHTML = '';
-    };
-    dropdown.appendChild(item);
-  });
-}
+// Route planning
+document.getElementById("routeBtn").addEventListener("click", async () => {
+  const start = startInput.value;
+  const end = endInput.value;
+  const mode = document.getElementById("travelMode").value;
 
-setupAutocomplete('start');
-setupAutocomplete('end');
+  const [startResult, endResult] = await Promise.all([
+    provider.search({ query: start }),
+    provider.search({ query: end }),
+  ]);
 
-// === Geocode and fetch accessibility info ===
-async function geocodeLocation(query, addMarker = false) {
-  const url = `https://api.openrouteservice.org/geocode/search?api_key=${apiKey}&text=${encodeURIComponent(query)}&boundary.country=CA&focus.point.lat=45.4215&focus.point.lon=-75.6972`;
-
-  const response = await fetch(url);
-  const data = await response.json();
-
-  if (data.features && data.features.length > 0) {
-    const coords = data.features[0].geometry.coordinates;
-    const placeName = data.features[0].properties.label || query;
-
-    if (addMarker) {
-      const info = await fetchAccessibilityInfo(coords[1], coords[0]);
-
-      L.marker([coords[1], coords[0]])
-        .addTo(map)
-        .bindPopup(`
-          <strong>${placeName}</strong><br/>
-          ♿ Elevator access: ${info.elevator}<br/>
-          🅿️ Accessible parking: ${info.parking}<br/>
-          🚻 Accessible washroom: ${info.washroom}<br/>
-          🛗 Ramp available: ${info.ramp}
-        `).openPopup();
-    }
-
-    return coords;
-  }
-
-  return null;
-}
-
-// === Fetch real accessibility info from Overpass ===
-async function fetchAccessibilityInfo(lat, lon) {
-  const query = `
-    [out:json];
-    (
-      node["wheelchair"](around:100,${lat},${lon});
-      way["wheelchair"](around:100,${lat},${lon});
-      node["toilets:wheelchair"](around:100,${lat},${lon});
-      way["toilets:wheelchair"](around:100,${lat},${lon});
-      node["parking:wheelchair"](around:100,${lat},${lon});
-      way["parking:wheelchair"](around:100,${lat},${lon});
-      node["ramp"](around:100,${lat},${lon});
-      way["ramp"](around:100,${lat},${lon});
-    );
-    out tags;
-  `;
-
-  const response = await fetch("https://overpass-api.de/api/interpreter", {
-    method: "POST",
-    body: query
-  });
-
-  const data = await response.json();
-
-  const result = {
-    elevator: "Unknown",
-    parking: "Unknown",
-    washroom: "Unknown",
-    ramp: "Unknown"
-  };
-
-  for (const el of data.elements) {
-    const tags = el.tags || {};
-    if (tags.wheelchair && result.elevator === "Unknown") result.elevator = tags.wheelchair;
-    if (tags["toilets:wheelchair"] && result.washroom === "Unknown") result.washroom = tags["toilets:wheelchair"];
-    if (tags["parking:wheelchair"] && result.parking === "Unknown") result.parking = tags["parking:wheelchair"];
-    if (tags["ramp"] && result.ramp === "Unknown") result.ramp = tags["ramp"];
-  }
-
-  return result;
-}
-
-// === Route Button ===
-document.getElementById('routeBtn').addEventListener('click', async () => {
-  const startQuery = document.getElementById('start').value;
-  const endQuery = document.getElementById('end').value;
-
-  if (!startQuery || !endQuery) {
-    alert('Please enter both start and end locations.');
+  if (startResult.length === 0 || endResult.length === 0) {
+    alert("Start or end location not found.");
     return;
   }
 
-  try {
-    const startCoords = await geocodeLocation(startQuery);
-    const endCoords = await geocodeLocation(endQuery, true); // Add marker
+  const startCoord = L.latLng(startResult[0].y, startResult[0].x);
+  const endCoord = L.latLng(endResult[0].y, endResult[0].x);
 
-    if (!startCoords || !endCoords) {
-      alert('Could not geocode one or both addresses.');
-      return;
-    }
+  if (control) {
+    map.removeControl(control);
+  }
 
-    const routeUrl = 'https://api.openrouteservice.org/v2/directions/foot-walking/geojson';
-    const response = await fetch(routeUrl, {
-      method: 'POST',
-      headers: {
-        'Authorization': apiKey,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        coordinates: [startCoords, endCoords]
-      })
+  control = L.Routing.control({
+    waypoints: [startCoord, endCoord],
+    routeWhileDragging: false,
+    router: L.Routing.openrouteservice(
+      "eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6Ijg1MGJhZDI3MmU4MjQwMjJiMWJjMzA2Nzc2ZGYzYzJjIiwiaCI6Im11cm11cjY0In0=", // Replace with your real key
+      {
+        profile: mode,
+      }
+    ),
+  }).addTo(map);
+
+  // Add accessibility info popups at start and end
+  [startCoord, endCoord].forEach(async (coord) => {
+    const response = await fetch(
+      `https://overpass-api.de/api/interpreter?data=[out:json];is_in(${coord.lat},${coord.lng})->.a;node(pivot.a);out body;`
+    );
+    const data = await response.json();
+    const features = data.elements || [];
+
+    const info = {
+      elevator: "Unknown",
+      parking: "Unknown",
+      washroom: "Unknown",
+      ramp: "Unknown",
+    };
+
+    features.forEach((el) => {
+      if (!el.tags) return;
+      if (el.tags["wheelchair"] === "yes") info.ramp = "yes";
+      if (el.tags["wheelchair"] === "no") info.ramp = "no";
+      if (el.tags["building"] === "yes" && el.tags["elevator"] === "yes") info.elevator = "yes";
+      if (el.tags["toilets:wheelchair"] === "yes") info.washroom = "yes";
+      if (el.tags["parking:wheelchair"] === "yes") info.parking = "yes";
     });
 
-    const data = await response.json();
+    const popup = `
+      <b>${coord.lat.toFixed(4)}, ${coord.lng.toFixed(4)}</b><br>
+      🛗 Elevator access: ${info.elevator}<br>
+      🅿️ Accessible parking: ${info.parking}<br>
+      🚻 Accessible washroom: ${info.washroom}<br>
+      ♿ Ramp available: ${info.ramp}
+    `;
+    L.marker(coord).addTo(map).bindPopup(popup).openPopup();
+  });
+});
 
-    if (routeLayer) {
-      map.removeLayer(routeLayer);
-    }
+// Show accessibility markers
+document.getElementById("accessBtn").addEventListener("click", async () => {
+  const bounds = map.getBounds();
+  const bbox = `${bounds.getSouth()},${bounds.getWest()},${bounds.getNorth()},${bounds.getEast()}`;
+  const query = `
+    [out:json];
+    (
+      node["wheelchair"]( ${bbox} );
+      way["wheelchair"]( ${bbox} );
+      relation["wheelchair"]( ${bbox} );
+    );
+    out center;
+  `;
+  const url = "https://overpass-api.de/api/interpreter?data=" + encodeURIComponent(query);
+  const response = await fetch(url);
+  const data = await response.json();
 
-    routeLayer = L.geoJSON(data, {
-      style: { color: '#007BFF', weight: 5 }
-    }).addTo(map);
+  data.elements.forEach((el) => {
+    const lat = el.lat || el.center?.lat;
+    const lon = el.lon || el.center?.lon;
+    if (!lat || !lon) return;
 
-    map.fitBounds(routeLayer.getBounds());
+    const label = el.tags?.name || "Accessible place";
+    const icon = L.icon({
+      iconUrl: "https://cdn-icons-png.flaticon.com/512/69/69589.png",
+      iconSize: [24, 24],
+      iconAnchor: [12, 24],
+    });
 
-  } catch (err) {
-    console.error(err);
-    alert('An error occurred while calculating the route.');
-  }
+    L.marker([lat, lon], { icon }).addTo(map).bindPopup(`<b>${label}</b><br>Wheelchair: ${el.tags.wheelchair}`);
+  });
 });
