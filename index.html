@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
- <meta charset="UTF-8" />
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>PathFinder - Accessible Route Planner</title>
   <link rel="stylesheet" href="style.css"/>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
   <script src="https://unpkg.com/leaflet-routing-machine-openrouteservice/dist/lrm-openrouteservice.js"></script>
@@ -23,7 +22,6 @@
     <input type="text" id="end" placeholder="End Location" />
     <button id="routeBtn">Get Route</button>
     
-    <!-- Corrected travel mode options -->
     <select id="travelMode">
       <option value="foot-walking">Walking</option>
       <option value="wheelchair">Wheelchair</option>
@@ -36,11 +34,6 @@
 
   <div id="map"></div>
 
-  <!-- Scripts at the end of body -->
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
-  <script src="https://unpkg.com/leaflet-routing-machine-openrouteservice/dist/lrm-openrouteservice.js"></script>
-  <script src="https://unpkg.com/leaflet-geosearch@3.11.0/dist/bundle.min.js"></script>
   <script src="script.js?v=2"></script>
 </body>
 </html>
