@@ -6,7 +6,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 }).addTo(map);
 
 // Replace with your real OpenRouteService API key
-const apiKey = 'eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6Ijg1MGJhZDI3MmU4MjQwMjJiMWJjMzA2Nzc2ZGYzYzJjIiwiaCI6Im11cm11cjY0In0='; // <--- replace 'x' with your actual key
+const apiKey = 'eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6Ijg1MGJhZDI3MmU4MjQwMjJiMWJjMzA2Nzc2ZGYzYzJjIiwiaCI6Im11cm11cjY0In0='; // <--- replace with your actual key
 
 let routeLayer;
 
@@ -25,7 +25,8 @@ function setupAutocomplete(inputId) {
   const input = document.getElementById(inputId);
 
   input.addEventListener('input', async () => {
-    const results = await provider.search({ query: input.value });
+    const query = `${input.value}, Ottawa, Canada`; // Boost Ottawa relevance
+    const results = await provider.search({ query });
     showSuggestions(results, input);
   });
 }
@@ -124,7 +125,7 @@ document.getElementById('routeBtn').addEventListener('click', async () => {
 
   try {
     const startCoords = await geocodeLocation(startQuery);
-    const endCoords = await geocodeLocation(endQuery, true); // Add popup marker here
+    const endCoords = await geocodeLocation(endQuery, true); // Add popup marker
 
     if (!startCoords || !endCoords) {
       alert('Could not geocode one or both addresses.');
