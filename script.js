@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", function () {
       '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
   }).addTo(map);
 
-  const apiKey = "YOUR_API_KEY_HERE"; // Replace this with your real key
+  const apiKey = "eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6Ijg1MGJhZDI3MmU4MjQwMjJiMWJjMzA2Nzc2ZGYzYzJjIiwiaCI6Im11cm11cjY0In0="; // Replace this with your real key
 
   L.Routing.control({
     waypoints: [
