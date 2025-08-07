@@ -1,5 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css"
+/>
+<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -33,6 +39,12 @@
   </header>
 
   <main>
+    <div id="route-inputs">
+  <input type="text" id="start" placeholder="Enter start location..." />
+  <input type="text" id="end" placeholder="Enter destination..." />
+  <button id="routeBtn">Get Route</button>
+</div>
+
     <div id="map">Loading map...</div>
   </main>
 
