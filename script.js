@@ -1,3 +1,5 @@
+// script.js
+
 const map = L.map("map").setView([45.4215, -75.6998], 14);
 
 // Basemap
@@ -19,6 +21,14 @@ const provider = new window.GeoSearch.OpenStreetMapProvider({
 const startInput = document.getElementById("start");
 const endInput = document.getElementById("end");
 
+// Wrap input fields for proper autocomplete positioning
+[startInput, endInput].forEach((input) => {
+  const wrapper = document.createElement("div");
+  wrapper.className = "input-wrapper";
+  input.parentNode.insertBefore(wrapper, input);
+  wrapper.appendChild(input);
+});
+
 // Autocomplete for both inputs
 ["start", "end"].forEach((id) => {
   const input = document.getElementById(id);
@@ -36,13 +46,16 @@ const endInput = document.getElementById("end");
       });
       list.appendChild(item);
     });
-    input.insertAdjacentElement("afterend", list);
+    const wrapper = input.parentElement;
+    wrapper.appendChild(list);
   });
 });
 
 function closeSuggestions(id) {
-  const existing = document.querySelectorAll(`#${id} + ul.suggestions`);
-  existing.forEach((el) => el.remove());
+  const input = document.getElementById(id);
+  const wrapper = input.parentElement;
+  const lists = wrapper.querySelectorAll(".suggestions");
+  lists.forEach((el) => el.remove());
 }
 
 // Route generation
@@ -71,9 +84,9 @@ document.getElementById("routeBtn").addEventListener("click", async () => {
   control = L.Routing.control({
     waypoints: [startCoord, endCoord],
     routeWhileDragging: false,
-   router: L.Routing.openrouteservice("eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6Ijg1MGJhZDI3MmU4MjQwMjJiMWJjMzA2Nzc2ZGYzYzJjIiwiaCI6Im11cm11cjY0In0=", {
-  profile: mode
-}),
+    router: L.Routing.openrouteservice("eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6Ijg1MGJhZDI3MmU4MjQwMjJiMWJjMzA2Nzc2ZGYzYzJjIiwiaCI6Im11cm11cjY0In0=", {
+      profile: mode,
+    }),
   }).addTo(map);
 
   // Accessibility info popup
