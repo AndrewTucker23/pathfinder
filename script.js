@@ -1,6 +1,6 @@
-const map = L.map('map').setView([45.4215, -75.6972], 13); // Ottawa center
+const map = L.map('map').setView([45.4215, -75.6972], 13); // Centered on Ottawa
 
-// Add OpenStreetMap tiles
+// Add OSM base map
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '&copy; OpenStreetMap contributors'
 }).addTo(map);
@@ -9,6 +9,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 const apiKey = 'eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6Ijg1MGJhZDI3MmU4MjQwMjJiMWJjMzA2Nzc2ZGYzYzJjIiwiaCI6Im11cm11cjY0In0='; // <--- replace with your actual key
 
 let routeLayer;
+let poiLayer;
 
 // === Autocomplete Setup ===
 const { OpenStreetMapProvider } = window.GeoSearch;
@@ -23,10 +24,8 @@ const provider = new OpenStreetMapProvider({
 
 function setupAutocomplete(inputId) {
   const input = document.getElementById(inputId);
-
   input.addEventListener('input', async () => {
-    const query = `${input.value}, Ottawa, Canada`; // Boost Ottawa relevance
-    const results = await provider.search({ query });
+    const results = await provider.search({ query: input.value });
     showSuggestions(results, input);
   });
 }
@@ -56,7 +55,7 @@ function showSuggestions(results, input) {
 setupAutocomplete('start');
 setupAutocomplete('end');
 
-// === Dummy Accessibility Info (mocked by name) ===
+// === Dummy Accessibility Info for Destination Popup ===
 function getAccessibilityInfo(name) {
   if (name.toLowerCase().includes("hospital")) {
     return {
@@ -82,7 +81,7 @@ function getAccessibilityInfo(name) {
   }
 }
 
-// === Geocode with Optional Marker + Accessibility Popup ===
+// === Geocode using ORS (optionally add marker) ===
 async function geocodeLocation(query, addMarker = false) {
   const url = `https://api.openrouteservice.org/geocode/search?api_key=${apiKey}&text=${encodeURIComponent(query)}&boundary.country=CA&focus.point.lat=45.4215&focus.point.lon=-75.6972`;
 
@@ -125,7 +124,7 @@ document.getElementById('routeBtn').addEventListener('click', async () => {
 
   try {
     const startCoords = await geocodeLocation(startQuery);
-    const endCoords = await geocodeLocation(endQuery, true); // Add popup marker
+    const endCoords = await geocodeLocation(endQuery, true); // Popup at end
 
     if (!startCoords || !endCoords) {
       alert('Could not geocode one or both addresses.');
@@ -159,5 +158,46 @@ document.getElementById('routeBtn').addEventListener('click', async () => {
   } catch (err) {
     console.error(err);
     alert('An error occurred while calculating the route.');
+  }
+});
+
+// === Overpass API to Get Accessible POIs ===
+document.getElementById('showPOIsBtn').addEventListener('click', async () => {
+  if (poiLayer) {
+    map.removeLayer(poiLayer);
+  }
+
+  const bbox = map.getBounds().toBBoxString();
+  const query = `
+    [out:json];
+    (
+      node["wheelchair"="yes"](${bbox});
+      way["wheelchair"="yes"](${bbox});
+      relation["wheelchair"="yes"](${bbox});
+    );
+    out center;
+  `;
+
+  try {
+    const response = await fetch('https://overpass-api.de/api/interpreter', {
+      method: 'POST',
+      body: query
+    });
+
+    const data = await response.json();
+
+    const markers = data.elements.map(el => {
+      const lat = el.lat || el.center?.lat;
+      const lon = el.lon || el.center?.lon;
+      const name = el.tags?.name || "Accessible Place";
+
+      return L.marker([lat, lon]).bindPopup(`<strong>${name}</strong><br/>♿ Wheelchair accessible`);
+    });
+
+    poiLayer = L.layerGroup(markers).addTo(map);
+    alert(`Found ${markers.length} accessible places in this area.`);
+  } catch (error) {
+    console.error('Overpass error:', error);
+    alert('Error fetching accessibility data from OpenStreetMap.');
   }
 });
