@@ -55,10 +55,11 @@ document.getElementById("routeBtn").addEventListener("click", async () => {
 });
 
 // Optional: Add PhotonProvider autocomplete using Leaflet GeoSearch
-const provider = new window.GeoSearch.PhotonProvider({
+const provider = new GeoSearch.PhotonProvider({
   params: {
     lat: 45.4215,
-    lon: -75.6972
+    lon: -75.6972,
+    lang: 'en',
   }
 });
 
@@ -74,16 +75,18 @@ const startSearch = new window.GeoSearch.GeoSearchControl({
   updateMap: false
 });
 map.addControl(startSearch);
+map.addControl(endSearch);
+startSearch.on('results', function (data) {
+  if (data.results.length > 0) {
+    document.getElementById('start').value = data.results[0].label;
+  }
+});
 
-const endSearch = new window.GeoSearch.GeoSearchControl({
-  provider: provider,
-  style: 'bar',
-  searchLabel: 'End Location',
-  autoComplete: true,
-  autoCompleteDelay: 250,
-  retainZoomLevel: true,
-  animateZoom: true,
-  keepResult: true,
-  updateMap: false
+endSearch.on('results', function (data) {
+  if (data.results.length > 0) {
+    document.getElementById('end').value = data.results[0].label;
+  }
+});
+
 });
 map.addControl(endSearch);
