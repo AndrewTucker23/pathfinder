@@ -9,7 +9,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 // Set up routing control variable
 let control;
 
-// Function to fetch coordinates from address using Photon
+// Function to fetch coordinates using Photon
 async function fetchCoordinates(address) {
   const url = `https://photon.komoot.io/api/?q=${encodeURIComponent(address)}&lat=45.4215&lon=-75.6972&limit=1`;
   const res = await fetch(url);
@@ -33,11 +33,18 @@ document.getElementById("routeBtn").addEventListener("click", async () => {
 
     if (control) map.removeControl(control); // Remove previous route
 
+    const orsRouter = new L.Routing.OpenRouteService({
+      serviceUrl: 'https://api.openrouteservice.org/v2/directions/' + travelMode,
+      profile: travelMode,
+      apiKey: 'eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6Ijg1MGJhZDI3MmU4MjQwMjJiMWJjMzA2Nzc2ZGYzYzJjIiwiaCI6Im11cm11cjY0In0='
+    });
+
     control = L.Routing.control({
-      waypoints: [L.latLng(startCoords[0], startCoords[1]), L.latLng(endCoords[0], endCoords[1])],
-      router: L.Routing.openrouteservice('eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6Ijg1MGJhZDI3MmU4MjQwMjJiMWJjMzA2Nzc2ZGYzYzJjIiwiaCI6Im11cm11cjY0In0=', {
-        profile: travelMode,
-      }),
+      waypoints: [
+        L.latLng(startCoords[0], startCoords[1]),
+        L.latLng(endCoords[0], endCoords[1])
+      ],
+      router: orsRouter,
       show: false,
       routeWhileDragging: false
     }).addTo(map);
@@ -46,3 +53,37 @@ document.getElementById("routeBtn").addEventListener("click", async () => {
     alert("Error: " + error.message);
   }
 });
+
+// Optional: Add PhotonProvider autocomplete using Leaflet GeoSearch
+const provider = new window.GeoSearch.PhotonProvider({
+  params: {
+    lat: 45.4215,
+    lon: -75.6972
+  }
+});
+
+const startSearch = new window.GeoSearch.GeoSearchControl({
+  provider: provider,
+  style: 'bar',
+  searchLabel: 'Start Location',
+  autoComplete: true,
+  autoCompleteDelay: 250,
+  retainZoomLevel: true,
+  animateZoom: true,
+  keepResult: true,
+  updateMap: false
+});
+map.addControl(startSearch);
+
+const endSearch = new window.GeoSearch.GeoSearchControl({
+  provider: provider,
+  style: 'bar',
+  searchLabel: 'End Location',
+  autoComplete: true,
+  autoCompleteDelay: 250,
+  retainZoomLevel: true,
+  animateZoom: true,
+  keepResult: true,
+  updateMap: false
+});
+map.addControl(endSearch);
