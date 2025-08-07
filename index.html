@@ -1,17 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<link
-  rel="stylesheet"
-  href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css"
-/>
-<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
-
 <head>
-  <link
-  rel="stylesheet"
-  href="https://unpkg.com/leaflet-geosearch@3.1.0/dist/geosearch.css"
-/>
-
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PathFinder</title>
@@ -21,19 +10,21 @@
     rel="stylesheet"
     href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
   />
-
   <!-- Leaflet Routing Machine CSS -->
   <link
     rel="stylesheet"
     href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css"
   />
-
   <!-- Leaflet Control Geocoder CSS -->
   <link
     rel="stylesheet"
     href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css"
   />
-
+  <!-- GeoSearch CSS -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet-geosearch@3.1.0/dist/geosearch.css"
+  />
   <!-- Your Custom Styles -->
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -43,38 +34,29 @@
     <p>Accessible Route Planner for People with Mobility Challenges</p>
   </header>
 
+  <!-- Route Input Fields -->
   <div style="padding: 10px; text-align: center;">
-  <input type="text" id="start" placeholder="Start Location" />
-  <input type="text" id="end" placeholder="End Location" />
-  <button id="routeBtn">Get Route</button>
-</div>
+    <input type="text" id="start" placeholder="Start Location" />
+    <input type="text" id="end" placeholder="End Location" />
+    <button id="routeBtn">Get Route</button>
+  </div>
 
+  <!-- Map Display -->
   <main>
-    <div id="route-inputs">
-  <input type="text" id="start" placeholder="Enter start location..." />
-  <input type="text" id="end" placeholder="Enter destination..." />
-  <button id="routeBtn">Get Route</button>
-</div>
-
     <div id="map">Loading map...</div>
   </main>
 
   <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
   <!-- Leaflet Routing Machine JS -->
   <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.min.js"></script>
-
-  <!-- ORS LRM Plugin JS -->
+  <!-- OpenRouteService plugin -->
   <script src="https://unpkg.com/lrm-ors/dist/lrm-ors.min.js"></script>
-
-  <!-- Leaflet Control Geocoder JS -->
+  <!-- Control Geocoder -->
   <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
-
-  <!-- Your Script -->
-  <script src="script.js"></script>
-
+  <!-- GeoSearch -->
   <script src="https://unpkg.com/leaflet-geosearch@3.1.0/dist/bundle.min.js"></script>
-
+  <!-- Your Custom Script -->
+  <script src="script.js"></script>
 </body>
 </html>
