@@ -74,6 +74,18 @@ const startSearch = new window.GeoSearch.GeoSearchControl({
   keepResult: true,
   updateMap: false
 });
+const endSearch = new window.GeoSearch.GeoSearchControl({
+  provider: provider,
+  style: 'bar',
+  searchLabel: 'End Location',
+  autoComplete: true,
+  autoCompleteDelay: 250,
+  retainZoomLevel: true,
+  animateZoom: true,
+  keepResult: true,
+  updateMap: false
+});
+
 map.addControl(startSearch);
 map.addControl(endSearch);
 startSearch.on('results', function (data) {
@@ -89,4 +101,3 @@ endSearch.on('results', function (data) {
 });
 
 });
-map.addControl(endSearch);
