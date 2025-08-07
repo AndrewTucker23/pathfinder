@@ -1,103 +1,94 @@
-/* === Page Layout === */
-body, html {
+/* Reset default margin/padding */
+* {
   margin: 0;
   padding: 0;
-  height: 100%;
-  font-family: Arial, sans-serif;
+  box-sizing: border-box;
 }
 
-/* === Header Styling === */
+/* Body styling */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+}
+
+/* Header styling */
 header {
   background-color: #007BFF;
   color: white;
-  padding: 20px;
   text-align: center;
+  padding: 1.5rem 1rem;
 }
 
 header h1 {
-  margin: 0;
-  font-size: 2em;
+  margin-bottom: 0.5rem;
 }
 
-header p {
-  margin: 5px 0 0;
-  font-size: 1em;
-}
-
-/* === Map Container === */
-main {
-  height: calc(100% - 100px); /* Adjust based on header height */
-}
-
-#map {
-  height: 100%;
-  width: 100%;
-}
-
-/* === Leaflet Search Control Enhancements === */
-.leaflet-control-geosearch {
-  transform: scale(1.5); /* Make magnifying glass larger */
-  margin: 12px;
-  border: 2px solid #007BFF;
-  border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+/* Input section */
+.input-container {
+  padding: 10px;
+  text-align: center;
   background-color: white;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+  position: relative;
+  z-index: 1000;
 }
 
-.leaflet-control-geosearch .leaflet-bar-part {
-  padding: 8px 10px;
-  font-size: 16px;
-  color: #333;
+.input-box {
+  position: relative;
+  display: inline-block;
+  margin: 0 10px;
 }
 
-.leaflet-control-geosearch:hover {
-  background-color: #e6f0ff;
-  cursor: pointer;
-}
-
-/* === Leaflet Marker Popup Styling (optional tweaks) === */
-.leaflet-popup-content {
+input[type="text"] {
+  padding: 8px 12px;
+  width: 250px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
   font-size: 14px;
-  line-height: 1.4;
-}
-/* Make the magnifying glass icon larger and more prominent */
-.leaflet-control-geocoder {
-  width: 60px;
-  height: 60px;
-  background-color: #ffffff;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-  transition: transform 0.2s ease-in-out;
 }
 
-.leaflet-control-geocoder-icon {
-  background-size: 30px 30px;
-  width: 30px;
-  height: 30px;
-  margin: 15px;
-}
-
-.leaflet-control-geocoder:hover {
-  transform: scale(1.1);
+button {
+  padding: 8px 16px;
+  background-color: #007BFF;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
   cursor: pointer;
 }
 
-/* Optional: Tooltip for accessibility */
-.leaflet-control-geocoder::after {
-  content: "Search Location";
-  position: absolute;
-  top: 70px;
-  right: 0;
-  background: #333;
-  color: #fff;
-  padding: 4px 8px;
-  border-radius: 5px;
-  font-size: 12px;
-  white-space: nowrap;
-  display: none;
-  z-index: 999;
+button:hover {
+  background-color: #0056b3;
 }
 
-.leaflet-control-geocoder:hover::after {
-  display: block;
+/* Map styling */
+#map {
+  width: 100%;
+  height: 85vh;
+  z-index: 1;
+}
+
+/* Autocomplete suggestion box */
+#start-suggestions,
+#end-suggestions {
+  position: absolute;
+  background: #fff;
+  border: 1px solid #ccc;
+  z-index: 9999;
+  width: 250px;
+  max-height: 200px;
+  overflow-y: auto;
+  font-size: 14px;
+  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+#start-suggestions div,
+#end-suggestions div {
+  padding: 8px;
+  cursor: pointer;
+}
+
+#start-suggestions div:hover,
+#end-suggestions div:hover {
+  background-color: #f0f0f0;
 }
