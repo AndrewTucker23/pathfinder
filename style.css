@@ -60,3 +60,44 @@ main {
   font-size: 14px;
   line-height: 1.4;
 }
+/* Make the magnifying glass icon larger and more prominent */
+.leaflet-control-geocoder {
+  width: 60px;
+  height: 60px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease-in-out;
+}
+
+.leaflet-control-geocoder-icon {
+  background-size: 30px 30px;
+  width: 30px;
+  height: 30px;
+  margin: 15px;
+}
+
+.leaflet-control-geocoder:hover {
+  transform: scale(1.1);
+  cursor: pointer;
+}
+
+/* Optional: Tooltip for accessibility */
+.leaflet-control-geocoder::after {
+  content: "Search Location";
+  position: absolute;
+  top: 70px;
+  right: 0;
+  background: #333;
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 5px;
+  font-size: 12px;
+  white-space: nowrap;
+  display: none;
+  z-index: 999;
+}
+
+.leaflet-control-geocoder:hover::after {
+  display: block;
+}
