@@ -1,10 +1,13 @@
 const map = L.map('map').setView([45.4215, -75.6972], 13); // Ottawa center
 
+// Add OpenStreetMap tiles
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '&copy; OpenStreetMap contributors'
 }).addTo(map);
 
-const apiKey = 'eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6Ijg1MGJhZDI3MmU4MjQwMjJiMWJjMzA2Nzc2ZGYzYzJjIiwiaCI6Im11cm11cjY0In0='; // Replace with your real OpenRouteService API key
+// Replace with your real OpenRouteService API key
+const apiKey = 'eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6Ijg1MGJhZDI3MmU4MjQwMjJiMWJjMzA2Nzc2ZGYzYzJjIiwiaCI6Im11cm11cjY0In0='; // <--- replace 'x' with your actual key
+
 let routeLayer;
 
 // === Autocomplete Setup ===
@@ -12,32 +15,19 @@ const { OpenStreetMapProvider } = window.GeoSearch;
 
 const provider = new OpenStreetMapProvider({
   params: {
-    viewbox: '-75.9,45.6,-75.5,45.3',
+    viewbox: '-75.9,45.6,-75.5,45.3', // Ottawa bounding box
     bounded: 1,
     countrycodes: 'ca'
   }
 });
 
-// Debounce helper
-function debounce(func, delay = 300) {
-  let timeout;
-  return (...args) => {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => func.apply(this, args), delay);
-  };
-}
-
 function setupAutocomplete(inputId) {
   const input = document.getElementById(inputId);
 
-  input.addEventListener('input', debounce(async () => {
-    const query = input.value;
-    if (!query) return;
-
-    const results = await provider.search({ query });
-    const filtered = results.filter(r => r.raw?.confidence >= 0.7); // filter low-confidence
-    showSuggestions(filtered, input);
-  }, 300));
+  input.addEventListener('input', async () => {
+    const results = await provider.search({ query: input.value });
+    showSuggestions(results, input);
+  });
 }
 
 function showSuggestions(results, input) {
@@ -45,7 +35,7 @@ function showSuggestions(results, input) {
   if (!dropdown) {
     dropdown = document.createElement('div');
     dropdown.id = `${input.id}-suggestions`;
-    dropdown.classList.add('suggestion-box');
+    dropdown.className = 'suggestions-box';
     input.parentNode.appendChild(dropdown);
   }
 
@@ -54,10 +44,10 @@ function showSuggestions(results, input) {
   results.forEach(result => {
     const item = document.createElement('div');
     item.textContent = result.label;
-    item.addEventListener('click', () => {
+    item.onclick = () => {
       input.value = result.label;
       dropdown.innerHTML = '';
-    });
+    };
     dropdown.appendChild(item);
   });
 }
@@ -65,7 +55,64 @@ function showSuggestions(results, input) {
 setupAutocomplete('start');
 setupAutocomplete('end');
 
-// === Routing Button Handler ===
+// === Dummy Accessibility Info (mocked by name) ===
+function getAccessibilityInfo(name) {
+  if (name.toLowerCase().includes("hospital")) {
+    return {
+      elevator: "Yes",
+      parking: "Yes",
+      washroom: "Yes",
+      ramp: "Yes"
+    };
+  } else if (name.toLowerCase().includes("school")) {
+    return {
+      elevator: "No",
+      parking: "Yes",
+      washroom: "No",
+      ramp: "Yes"
+    };
+  } else {
+    return {
+      elevator: "Unknown",
+      parking: "Unknown",
+      washroom: "Unknown",
+      ramp: "Unknown"
+    };
+  }
+}
+
+// === Geocode with Optional Marker + Accessibility Popup ===
+async function geocodeLocation(query, addMarker = false) {
+  const url = `https://api.openrouteservice.org/geocode/search?api_key=${apiKey}&text=${encodeURIComponent(query)}&boundary.country=CA&focus.point.lat=45.4215&focus.point.lon=-75.6972`;
+
+  const response = await fetch(url);
+  const data = await response.json();
+
+  if (data.features && data.features.length > 0) {
+    const coords = data.features[0].geometry.coordinates;
+
+    if (addMarker) {
+      const placeName = data.features[0].properties.label || query;
+      const info = getAccessibilityInfo(placeName);
+
+      L.marker([coords[1], coords[0]])
+        .addTo(map)
+        .bindPopup(`
+          <strong>${placeName}</strong><br/>
+          ♿ Elevator access: ${info.elevator}<br/>
+          🅿️ Accessible parking: ${info.parking}<br/>
+          🚻 Accessible washroom: ${info.washroom}<br/>
+          🛗 Ramp available: ${info.ramp}
+        `).openPopup();
+    }
+
+    return coords;
+  }
+
+  return null;
+}
+
+// === Route Button Handler ===
 document.getElementById('routeBtn').addEventListener('click', async () => {
   const startQuery = document.getElementById('start').value;
   const endQuery = document.getElementById('end').value;
@@ -77,7 +124,7 @@ document.getElementById('routeBtn').addEventListener('click', async () => {
 
   try {
     const startCoords = await geocodeLocation(startQuery);
-    const endCoords = await geocodeLocation(endQuery);
+    const endCoords = await geocodeLocation(endQuery, true); // Add popup marker here
 
     if (!startCoords || !endCoords) {
       alert('Could not geocode one or both addresses.');
@@ -113,17 +160,3 @@ document.getElementById('routeBtn').addEventListener('click', async () => {
     alert('An error occurred while calculating the route.');
   }
 });
-
-// === Geocode using ORS API ===
-async function geocodeLocation(query) {
-  const url = `https://api.openrouteservice.org/geocode/search?api_key=${apiKey}&text=${encodeURIComponent(query)}&boundary.country=CA&focus.point.lat=45.4215&focus.point.lon=-75.6972`;
-
-  const response = await fetch(url);
-  const data = await response.json();
-
-  if (data.features && data.features.length > 0) {
-    return data.features[0].geometry.coordinates;
-  }
-
-  return null;
-}
