@@ -72,8 +72,8 @@ document.getElementById("routeBtn").addEventListener("click", async () => {
     waypoints: [startCoord, endCoord],
     routeWhileDragging: false,
     router: new L.Routing.OpenRouteService({
-      serviceUrl: 'https://api.openrouteservice.org/v2/directions',
-      apiKey: 'eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6Ijg1MGJhZDI3MmU4MjQwMjJiMWJjMzA2Nzc2ZGYzYzJjIiwiaCI6Im11cm11cjY0In0=', // Replace with your actual ORS API key
+      serviceUrl: "https://api.openrouteservice.org/v2/directions",
+      apiKey: "eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6Ijg1MGJhZDI3MmU4MjQwMjJiMWJjMzA2Nzc2ZGYzYzJjIiwiaCI6Im11cm11cjY0In0=", // ⬅️ Replace this with your actual OpenRouteService key
       profile: mode,
     }),
   }).addTo(map);
