@@ -2,22 +2,19 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PathFinder</title>
+
   <!-- Leaflet CSS -->
-<link
-  rel="stylesheet"
-  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
-<!-- Leaflet JS -->
-<script
-  src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-></script>
-  <!-- Leaflet Routing Machine + ORS plugin -->
-<script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.min.js"></script>
-<script src="https://unpkg.com/lrm-ors/dist/lrm-ors.min.js"></script>
+  <!-- Leaflet Routing Machine CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
 
+  <!-- Geocoder CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+
+  <!-- Your custom styles -->
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -25,9 +22,24 @@
     <h1>PathFinder</h1>
     <p>Accessible Route Planner for People with Mobility Challenges</p>
   </header>
+
   <main>
     <div id="map">Loading map...</div>
   </main>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- Leaflet Routing Machine -->
+  <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.min.js"></script>
+
+  <!-- ORS plugin for Routing Machine -->
+  <script src="https://unpkg.com/lrm-ors/dist/lrm-ors.min.js"></script>
+
+  <!-- Geocoder plugin -->
+  <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+
+  <!-- Your custom JavaScript -->
   <script src="script.js"></script>
 </body>
 </html>
