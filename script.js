@@ -1,33 +1,43 @@
-const map = L.map('map').setView([45.4215, -75.6972], 13); // Centered on Ottawa
+const map = L.map('map').setView([45.4215, -75.6972], 13); // Ottawa center
 
-// Add OpenStreetMap tile layer
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '&copy; OpenStreetMap contributors'
 }).addTo(map);
 
-// Replace with your real OpenRouteService API key
-const apiKey = 'eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6Ijg1MGJhZDI3MmU4MjQwMjJiMWJjMzA2Nzc2ZGYzYzJjIiwiaCI6Im11cm11cjY0In0=';
-
-let routeLayer; // Track active route
+const apiKey = 'eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6Ijg1MGJhZDI3MmU4MjQwMjJiMWJjMzA2Nzc2ZGYzYzJjIiwiaCI6Im11cm11cjY0In0='; // Replace with your real OpenRouteService API key
+let routeLayer;
 
 // === Autocomplete Setup ===
 const { OpenStreetMapProvider } = window.GeoSearch;
 
 const provider = new OpenStreetMapProvider({
   params: {
-    viewbox: '-75.9,45.6,-75.5,45.3', // Ottawa bounding box
+    viewbox: '-75.9,45.6,-75.5,45.3',
     bounded: 1,
     countrycodes: 'ca'
   }
 });
 
+// Debounce helper
+function debounce(func, delay = 300) {
+  let timeout;
+  return (...args) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func.apply(this, args), delay);
+  };
+}
+
 function setupAutocomplete(inputId) {
   const input = document.getElementById(inputId);
 
-  input.addEventListener('input', async () => {
-    const results = await provider.search({ query: input.value });
-    showSuggestions(results, input);
-  });
+  input.addEventListener('input', debounce(async () => {
+    const query = input.value;
+    if (!query) return;
+
+    const results = await provider.search({ query });
+    const filtered = results.filter(r => r.raw?.confidence >= 0.7); // filter low-confidence
+    showSuggestions(filtered, input);
+  }, 300));
 }
 
 function showSuggestions(results, input) {
@@ -35,11 +45,7 @@ function showSuggestions(results, input) {
   if (!dropdown) {
     dropdown = document.createElement('div');
     dropdown.id = `${input.id}-suggestions`;
-    dropdown.style.position = 'absolute';
-    dropdown.style.background = '#fff';
-    dropdown.style.border = '1px solid #ccc';
-    dropdown.style.zIndex = '1000';
-    dropdown.style.width = `${input.offsetWidth}px`;
+    dropdown.classList.add('suggestion-box');
     input.parentNode.appendChild(dropdown);
   }
 
@@ -47,20 +53,15 @@ function showSuggestions(results, input) {
 
   results.forEach(result => {
     const item = document.createElement('div');
-    item.style.padding = '6px';
-    item.style.cursor = 'pointer';
     item.textContent = result.label;
-
-    item.onclick = () => {
+    item.addEventListener('click', () => {
       input.value = result.label;
       dropdown.innerHTML = '';
-    };
-
+    });
     dropdown.appendChild(item);
   });
 }
 
-// Initialize autocomplete on both inputs
 setupAutocomplete('start');
 setupAutocomplete('end');
 
@@ -113,7 +114,7 @@ document.getElementById('routeBtn').addEventListener('click', async () => {
   }
 });
 
-// === Geocode using ORS (with Ottawa preference) ===
+// === Geocode using ORS API ===
 async function geocodeLocation(query) {
   const url = `https://api.openrouteservice.org/geocode/search?api_key=${apiKey}&text=${encodeURIComponent(query)}&boundary.country=CA&focus.point.lat=45.4215&focus.point.lon=-75.6972`;
 
