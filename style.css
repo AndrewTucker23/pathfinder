@@ -1,4 +1,4 @@
-/* Global page styles */
+/* === Page Layout === */
 body, html {
   margin: 0;
   padding: 0;
@@ -6,58 +6,57 @@ body, html {
   font-family: Arial, sans-serif;
 }
 
-/* Header section */
+/* === Header Styling === */
 header {
-  background-color: #0077cc;
+  background-color: #007BFF;
   color: white;
+  padding: 20px;
   text-align: center;
-  padding: 1rem 0;
 }
 
-h1 {
+header h1 {
   margin: 0;
-  font-size: 2rem;
+  font-size: 2em;
 }
 
-p {
-  margin: 0.25rem 0 0;
-  font-size: 1rem;
+header p {
+  margin: 5px 0 0;
+  font-size: 1em;
 }
 
-/* Map container */
+/* === Map Container === */
+main {
+  height: calc(100% - 100px); /* Adjust based on header height */
+}
+
 #map {
-  height: calc(100vh - 120px); /* Full height minus header */
+  height: 100%;
   width: 100%;
 }
 
-/* Make sure the search control is more visible */
-.leaflet-control-geocoder {
-  font-size: 16px;
+/* === Leaflet Search Control Enhancements === */
+.leaflet-control-geosearch {
+  transform: scale(1.5); /* Make magnifying glass larger */
+  margin: 12px;
+  border: 2px solid #007BFF;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
   background-color: white;
-  padding: 10px;
-  border-radius: 6px;
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
 }
 
-/* Enlarge the magnifying glass icon */
-.leaflet-control-geocoder-icon {
-  font-size: 24px !important;
-  width: 28px !important;
-  height: 28px !important;
-  background-size: 24px 24px !important;
+.leaflet-control-geosearch .leaflet-bar-part {
+  padding: 8px 10px;
+  font-size: 16px;
+  color: #333;
 }
 
-/* Optional: style the input for usability */
-.leaflet-control-geocoder input {
+.leaflet-control-geosearch:hover {
+  background-color: #e6f0ff;
+  cursor: pointer;
+}
+
+/* === Leaflet Marker Popup Styling (optional tweaks) === */
+.leaflet-popup-content {
   font-size: 14px;
-  padding: 6px 8px;
-  width: 180px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-/* Optional: reposition the search bar if needed */
-.leaflet-top.leaflet-right {
-  top: 10px;
-  right: 10px;
+  line-height: 1.4;
 }
