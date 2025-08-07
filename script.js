@@ -1,22 +1,73 @@
 const map = L.map('map').setView([45.4215, -75.6972], 13); // Centered on Ottawa
 
-// Add OpenStreetMap base layer
+// Add OpenStreetMap tile layer
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '&copy; OpenStreetMap contributors'
 }).addTo(map);
 
-// Input elements and button
-const startInput = document.getElementById('start');
-const endInput = document.getElementById('end');
-const routeBtn = document.getElementById('routeBtn');
+// Replace with your real OpenRouteService API key
+const apiKey = 'eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6Ijg1MGJhZDI3MmU4MjQwMjJiMWJjMzA2Nzc2ZGYzYzJjIiwiaCI6Im11cm11cjY0In0=';
 
-let routeLayer; // For removing the previous route
+let routeLayer; // Track active route
 
-const apiKey = 'eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6Ijg1MGJhZDI3MmU4MjQwMjJiMWJjMzA2Nzc2ZGYzYzJjIiwiaCI6Im11cm11cjY0In0='; // <-- Replace with your real key
+// === Autocomplete Setup ===
+const { OpenStreetMapProvider } = window.GeoSearch;
 
-routeBtn.addEventListener('click', async () => {
-  const startQuery = startInput.value;
-  const endQuery = endInput.value;
+const provider = new OpenStreetMapProvider({
+  params: {
+    viewbox: '-75.9,45.6,-75.5,45.3', // Ottawa bounding box
+    bounded: 1,
+    countrycodes: 'ca'
+  }
+});
+
+function setupAutocomplete(inputId) {
+  const input = document.getElementById(inputId);
+
+  input.addEventListener('input', async () => {
+    const results = await provider.search({ query: input.value });
+    showSuggestions(results, input);
+  });
+}
+
+function showSuggestions(results, input) {
+  let dropdown = document.getElementById(`${input.id}-suggestions`);
+  if (!dropdown) {
+    dropdown = document.createElement('div');
+    dropdown.id = `${input.id}-suggestions`;
+    dropdown.style.position = 'absolute';
+    dropdown.style.background = '#fff';
+    dropdown.style.border = '1px solid #ccc';
+    dropdown.style.zIndex = '1000';
+    dropdown.style.width = `${input.offsetWidth}px`;
+    input.parentNode.appendChild(dropdown);
+  }
+
+  dropdown.innerHTML = '';
+
+  results.forEach(result => {
+    const item = document.createElement('div');
+    item.style.padding = '6px';
+    item.style.cursor = 'pointer';
+    item.textContent = result.label;
+
+    item.onclick = () => {
+      input.value = result.label;
+      dropdown.innerHTML = '';
+    };
+
+    dropdown.appendChild(item);
+  });
+}
+
+// Initialize autocomplete on both inputs
+setupAutocomplete('start');
+setupAutocomplete('end');
+
+// === Routing Button Handler ===
+document.getElementById('routeBtn').addEventListener('click', async () => {
+  const startQuery = document.getElementById('start').value;
+  const endQuery = document.getElementById('end').value;
 
   if (!startQuery || !endQuery) {
     alert('Please enter both start and end locations.');
@@ -28,11 +79,10 @@ routeBtn.addEventListener('click', async () => {
     const endCoords = await geocodeLocation(endQuery);
 
     if (!startCoords || !endCoords) {
-      alert('Could not find one or both locations.');
+      alert('Could not geocode one or both addresses.');
       return;
     }
 
-    // Build ORS route API call
     const routeUrl = 'https://api.openrouteservice.org/v2/directions/foot-walking/geojson';
     const response = await fetch(routeUrl, {
       method: 'POST',
@@ -57,24 +107,20 @@ routeBtn.addEventListener('click', async () => {
 
     map.fitBounds(routeLayer.getBounds());
 
-  } catch (error) {
-    console.error('Routing error:', error);
-    alert('Error generating route.');
+  } catch (err) {
+    console.error(err);
+    alert('An error occurred while calculating the route.');
   }
 });
 
+// === Geocode using ORS (with Ottawa preference) ===
 async function geocodeLocation(query) {
-  const url = `https://api.openrouteservice.org/geocode/search?api_key=${apiKey}&text=${encodeURIComponent(query)}`;
+  const url = `https://api.openrouteservice.org/geocode/search?api_key=${apiKey}&text=${encodeURIComponent(query)}&boundary.country=CA&focus.point.lat=45.4215&focus.point.lon=-75.6972`;
 
   const response = await fetch(url);
   const data = await response.json();
 
-  if (
-    data &&
-    data.features &&
-    data.features.length > 0 &&
-    data.features[0].geometry
-  ) {
+  if (data.features && data.features.length > 0) {
     return data.features[0].geometry.coordinates;
   }
 
