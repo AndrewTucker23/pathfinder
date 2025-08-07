@@ -33,18 +33,11 @@ document.getElementById("routeBtn").addEventListener("click", async () => {
 
     if (control) map.removeControl(control); // Remove previous route
 
-    const orsRouter = new L.Routing.OpenRouteService({
-      serviceUrl: 'https://api.openrouteservice.org/v2/directions/' + travelMode,
-      profile: travelMode,
-      apiKey: 'eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6Ijg1MGJhZDI3MmU4MjQwMjJiMWJjMzA2Nzc2ZGYzYzJjIiwiaCI6Im11cm11cjY0In0='
-    });
-
     control = L.Routing.control({
       waypoints: [
         L.latLng(startCoords[0], startCoords[1]),
         L.latLng(endCoords[0], endCoords[1])
       ],
-      router: orsRouter,
       show: false,
       routeWhileDragging: false
     }).addTo(map);
