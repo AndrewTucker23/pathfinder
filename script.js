@@ -8,10 +8,10 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
 // Routing control instance
 let control;
 
-// GeoSearch (bounded to Ottawa)
+// Geocoder
 const provider = new window.GeoSearch.OpenStreetMapProvider({
   params: {
-    viewbox: "-75.9,45.5,-75.4,45.2",
+    viewbox: "-75.9,45.5,-75.4,45.2", // Ottawa bounding box
     bounded: 1,
   },
 });
@@ -19,16 +19,14 @@ const provider = new window.GeoSearch.OpenStreetMapProvider({
 const startInput = document.getElementById("start");
 const endInput = document.getElementById("end");
 
-// Autocomplete functionality
+// Autocomplete for both inputs
 ["start", "end"].forEach((id) => {
   const input = document.getElementById(id);
   input.addEventListener("input", async () => {
     const results = await provider.search({ query: input.value });
     closeSuggestions(id);
-
     const list = document.createElement("ul");
     list.className = "suggestions";
-
     results.forEach((result) => {
       const item = document.createElement("li");
       item.textContent = result.label;
@@ -38,8 +36,7 @@ const endInput = document.getElementById("end");
       });
       list.appendChild(item);
     });
-
-    input.parentNode.appendChild(list);
+    input.insertAdjacentElement("afterend", list);
   });
 });
 
@@ -48,7 +45,7 @@ function closeSuggestions(id) {
   existing.forEach((el) => el.remove());
 }
 
-// Get Route Button
+// Route generation
 document.getElementById("routeBtn").addEventListener("click", async () => {
   const start = startInput.value;
   const end = endInput.value;
@@ -76,12 +73,12 @@ document.getElementById("routeBtn").addEventListener("click", async () => {
     routeWhileDragging: false,
     router: new L.Routing.OpenRouteService({
       serviceUrl: "https://api.openrouteservice.org/v2/directions",
-      apiKey: "eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6Ijg1MGJhZDI3MmU4MjQwMjJiMWJjMzA2Nzc2ZGYzYzJjIiwiaCI6Im11cm11cjY0In0=", // ← Replace with your actual API key
+      apiKey: "eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6Ijg1MGJhZDI3MmU4MjQwMjJiMWJjMzA2Nzc2ZGYzYzJjIiwiaCI6Im11cm11cjY0In0=", // Replace with your actual key
       profile: mode,
     }),
   }).addTo(map);
 
-  // Add accessibility popups at start and end
+  // Accessibility info popup
   [startCoord, endCoord].forEach(async (coord) => {
     const response = await fetch(
       `https://overpass-api.de/api/interpreter?data=[out:json];is_in(${coord.lat},${coord.lng})->.a;node(pivot.a);out body;`
@@ -116,20 +113,19 @@ document.getElementById("routeBtn").addEventListener("click", async () => {
   });
 });
 
-// Show wheelchair accessibility markers
+// Show all wheelchair markers
 document.getElementById("accessBtn").addEventListener("click", async () => {
   const bounds = map.getBounds();
   const bbox = `${bounds.getSouth()},${bounds.getWest()},${bounds.getNorth()},${bounds.getEast()}`;
   const query = `
     [out:json];
     (
-      node["wheelchair"]( ${bbox} );
-      way["wheelchair"]( ${bbox} );
-      relation["wheelchair"]( ${bbox} );
+      node["wheelchair"](${bbox});
+      way["wheelchair"](${bbox});
+      relation["wheelchair"](${bbox});
     );
     out center;
   `;
-
   const url = "https://overpass-api.de/api/interpreter?data=" + encodeURIComponent(query);
   const response = await fetch(url);
   const data = await response.json();
