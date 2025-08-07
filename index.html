@@ -5,96 +5,103 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>PathFinder</title>
 
-  <!-- Leaflet CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-  <!-- Leaflet Routing Machine CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css"/>
-  <!-- GeoSearch CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet-geosearch@3.1.0/dist/geosearch.css"/>
-  <!-- Your Custom CSS -->
-  <link rel="stylesheet" href="style.css"/>
+  <!-- Leaflet & Plugins -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  />
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet-geosearch@3.11.0/dist/geosearch.css"
+  />
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+  ></script>
+  <script
+    src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.min.js"
+  ></script>
+  <script
+    src="https://unpkg.com/lrm-openrouteservice/dist/lrm-openrouteservice.min.js"
+  ></script>
+  <script
+    src="https://unpkg.com/leaflet-geosearch@3.11.0/dist/bundle.min.js"
+  ></script>
 
   <style>
     body {
-      font-family: Arial, sans-serif;
       margin: 0;
+      font-family: Arial, sans-serif;
     }
 
     header {
-      background-color: #007BFF;
+      background-color: #007bff;
       color: white;
+      padding: 1rem;
       text-align: center;
-      padding: 1.5rem 1rem;
     }
 
-    .input-container {
-      padding: 10px;
-      text-align: center;
-      background-color: white;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      z-index: 1000;
+    #controls {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 1rem;
+      gap: 10px;
     }
 
-    .input-container input, .input-container select, .input-container button {
-      margin: 5px;
+    input, select, button {
       padding: 8px;
       font-size: 14px;
     }
 
-    #map {
-      width: 100%;
-      height: 85vh;
-    }
-
-    ul.suggestions {
+    .suggestions {
+      position: absolute;
+      z-index: 9999;
+      background: white;
+      border: 1px solid #ccc;
       list-style: none;
       margin: 0;
       padding: 0;
-      background: white;
-      border: 1px solid #ccc;
-      position: absolute;
-      z-index: 9999;
-      width: 250px;
-      max-height: 200px;
+      max-height: 150px;
       overflow-y: auto;
+      width: 300px;
     }
 
-    ul.suggestions li {
-      padding: 8px;
+    .suggestions li {
+      padding: 5px 10px;
       cursor: pointer;
     }
 
-    ul.suggestions li:hover {
-      background-color: #f0f0f0;
+    .suggestions li:hover {
+      background-color: #eee;
+    }
+
+    #map {
+      width: 100%;
+      height: 80vh;
     }
   </style>
 </head>
 <body>
-
   <header>
     <h1>PathFinder</h1>
     <p>Accessible Route Planner for People with Mobility Challenges</p>
   </header>
 
-  <div class="input-container">
-    <input type="text" id="start" placeholder="Start Location"/>
-    <input type="text" id="end" placeholder="End Location"/>
+  <div id="controls">
+    <input id="start" type="text" placeholder="Start location" />
+    <input id="end" type="text" placeholder="End location" />
     <button id="routeBtn">Get Route</button>
+
+    <select id="travelMode">
+      <option value="foot-walking">Walking</option>
+      <option value="wheelchair">Wheelchair</option>
+    </select>
+
     <button id="accessBtn">Show Accessibility Markers</button>
-    <!-- Travel mode dropdown is created by JS -->
   </div>
 
-  <div id="map">Loading map...</div>
+  <div id="map"></div>
 
-  <!-- Leaflet JS -->
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <!-- Routing Machine -->
-  <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.min.js"></script>
-  <!-- ORS Plugin -->
-  <script src="https://unpkg.com/lrm-ors/dist/lrm-ors.min.js"></script>
-  <!-- GeoSearch -->
-  <script src="https://unpkg.com/leaflet-geosearch@3.1.0/dist/bundle.min.js"></script>
-  <!-- Your Script -->
   <script src="script.js"></script>
 </body>
 </html>
