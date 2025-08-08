@@ -8,13 +8,13 @@
   <!-- Styles -->
   <link rel="stylesheet" href="style.css"/>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <link rel="stylesheet" href="https://unpkg.com/leaflet-geosearch@3.1.0/dist/geosearch.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-geosearch@3.11.0/dist/geosearch.css" />
 
   <!-- Scripts -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
   <script src="https://unpkg.com/leaflet-routing-machine-openrouteservice/dist/lrm-openrouteservice.min.js"></script>
-  <script src="https://unpkg.com/leaflet-geosearch@3.1.0/dist/bundle.min.js"></script>
+  <script src="https://unpkg.com/leaflet-geosearch@3.11.0/dist/bundle.min.js"></script>
 </head>
 
 <body>
@@ -24,7 +24,7 @@
   </header>
 
   <div class="controls">
-   
+    <!-- Buttons + mode selection -->
     <button id="routeBtn">Get Route</button>
     
     <select id="travelMode">
@@ -37,12 +37,10 @@
     <button id="accessBtn">Show Accessibility Markers</button>
   </div>
 
+  <!-- Map container -->
   <div id="map"></div>
 
-  <!-- Scripts (in correct order) -->
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.min.js"></script>
-  <script src="https://unpkg.com/leaflet-geosearch@3.1.0/dist/bundle.min.js"></script>
+  <!-- Main App Script -->
   <script src="script.js?v=2"></script>
 </body>
 </html>
