@@ -15,6 +15,38 @@
   <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
   <script src="https://unpkg.com/leaflet-routing-machine-openrouteservice/dist/lrm-openrouteservice.min.js"></script>
   <script src="https://unpkg.com/leaflet-geosearch@3.11.0/dist/bundle.min.js"></script>
+
+  <style>
+    html, body {
+      margin: 0;
+      height: 100%;
+    }
+
+    #map {
+      height: 90vh;
+      width: 100%;
+    }
+
+    header {
+      background-color: #007bff;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+    }
+
+    .controls {
+      display: flex;
+      gap: 0.5rem;
+      padding: 0.5rem;
+      background-color: #f8f9fa;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .leaflet-control-geosearch {
+      z-index: 1000 !important;
+    }
+  </style>
 </head>
 
 <body>
@@ -24,9 +56,8 @@
   </header>
 
   <div class="controls">
-    <!-- Buttons + mode selection -->
     <button id="routeBtn">Get Route</button>
-    
+
     <select id="travelMode">
       <option value="foot-walking">Walking</option>
       <option value="wheelchair">Wheelchair</option>
@@ -37,10 +68,9 @@
     <button id="accessBtn">Show Accessibility Markers</button>
   </div>
 
-  <!-- Map container -->
   <div id="map"></div>
 
   <!-- Main App Script -->
-  <script src="script.js?v=3"></script>
+  <script src="script.js?v=4"></script>
 </body>
 </html>
