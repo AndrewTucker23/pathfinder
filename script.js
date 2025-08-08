@@ -50,11 +50,6 @@ control = L.Routing.control({
 }).addTo(map);
 
 // Draw the route manually as a polyline to visualize it
-L.polyline(coords, {
-  color: 'red',
-  weight: 5,
-  opacity: 0.7
-}).addTo(map);
   } catch (error) {
     alert("Routing error: " + error.message);
   }
