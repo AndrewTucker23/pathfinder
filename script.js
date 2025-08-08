@@ -26,13 +26,14 @@ async function fetchCoordinates(address) {
 
 // Handle "Get Route" button
 document.getElementById("routeBtn").addEventListener("click", async () => {
- const travelMode = document.getElementById("travelMode").value;
+  const travelMode = document.getElementById("travelMode").value;
 
-if (!startCoords || !endCoords) {
-  alert("Please select both start and end locations.");
-  return;
-}
+  if (!startCoords || !endCoords) {
+    alert("Please select both start and end locations.");
+    return;
+  }
 
+  try {
     if (control) {
       map.removeControl(control); // Remove previous route
     }
@@ -40,7 +41,7 @@ if (!startCoords || !endCoords) {
     const orsRouter = new L.Routing.OpenRouteService({
       serviceUrl: 'https://api.openrouteservice.org/v2/directions/' + travelMode,
       profile: travelMode,
-      apiKey: 'eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6Ijg1MGJhZDI3MmU4MjQwMjJiMWJjMzA2Nzc2ZGYzYzJjIiwiaCI6Im11cm11cjY0In0='  // ⬅️ Replace this with your real key
+      apiKey: 'eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6Ijg1MGJhZDI3MmU4MjQwMjJiMWJjMzA2Nzc2ZGYzYzJjIiwiaCI6Im11cm11cjY0In0='
     });
 
     control = L.Routing.control({
