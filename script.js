@@ -59,8 +59,8 @@ document.getElementById("routeBtn").addEventListener("click", async () => {
   }
 });
 
-// Add Photon autocomplete using GeoSearch
-const provider = new GeoSearch.PhotonProvider({
+// ✅ Use `window.GeoSearch.PhotonProvider` here
+const provider = new window.GeoSearch.PhotonProvider({
   params: {
     lat: 45.4215,
     lon: -75.6972,
@@ -68,7 +68,7 @@ const provider = new GeoSearch.PhotonProvider({
   }
 });
 
-const startSearchControl = new GeoSearch.GeoSearchControl({
+const startSearchControl = new window.GeoSearch.GeoSearchControl({
   provider: provider,
   style: 'bar',
   searchLabel: 'Start Location',
@@ -80,7 +80,7 @@ const startSearchControl = new GeoSearch.GeoSearchControl({
   updateMap: true
 });
 
-const endSearchControl = new GeoSearch.GeoSearchControl({
+const endSearchControl = new window.GeoSearch.GeoSearchControl({
   provider: provider,
   style: 'bar',
   searchLabel: 'End Location',
@@ -98,15 +98,13 @@ map.addControl(endSearchControl);
 startSearchControl.on('results', function (data) {
   if (data.results.length > 0) {
     const result = data.results[0];
-    startCoords = [result.y, result.x]; // lat, lon
-    document.getElementById('start').value = result.label;
+    startCoords = [result.y, result.x];
   }
 });
 
 endSearchControl.on('results', function (data) {
   if (data.results.length > 0) {
     const result = data.results[0];
-    endCoords = [result.y, result.x]; // lat, lon
-    document.getElementById('end').value = result.label;
+    endCoords = [result.y, result.x];
   }
 });
