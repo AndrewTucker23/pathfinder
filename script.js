@@ -12,18 +12,6 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 // Routing control variable
 let control;
 
-// Function to fetch coordinates using Photon
-async function fetchCoordinates(address) {
-  const url = `https://photon.komoot.io/api/?q=${encodeURIComponent(address)}&lat=45.4215&lon=-75.6972&limit=1`;
-  const res = await fetch(url);
-  const data = await res.json();
-  if (data.features.length > 0) {
-    return data.features[0].geometry.coordinates.reverse(); // [lat, lon]
-  } else {
-    throw new Error("Location not found");
-  }
-}
-
 // Handle "Get Route" button
 document.getElementById("routeBtn").addEventListener("click", async () => {
   const travelMode = document.getElementById("travelMode").value;
@@ -59,8 +47,8 @@ document.getElementById("routeBtn").addEventListener("click", async () => {
   }
 });
 
-// ✅ Use `window.GeoSearch.PhotonProvider` here
-const provider = new window.GeoSearch.PhotonProvider({
+// GeoSearch: define the provider using correct constructor
+const provider = new window.GeoSearch.providers.Photon({
   params: {
     lat: 45.4215,
     lon: -75.6972,
@@ -68,8 +56,9 @@ const provider = new window.GeoSearch.PhotonProvider({
   }
 });
 
-const startSearchControl = new window.GeoSearch.GeoSearchControl({
-  provider: provider,
+// Create search bars for Start and End
+const startSearch = new window.GeoSearch.GeoSearchControl({
+  provider,
   style: 'bar',
   searchLabel: 'Start Location',
   autoComplete: true,
@@ -80,8 +69,8 @@ const startSearchControl = new window.GeoSearch.GeoSearchControl({
   updateMap: true
 });
 
-const endSearchControl = new window.GeoSearch.GeoSearchControl({
-  provider: provider,
+const endSearch = new window.GeoSearch.GeoSearchControl({
+  provider,
   style: 'bar',
   searchLabel: 'End Location',
   autoComplete: true,
@@ -92,19 +81,21 @@ const endSearchControl = new window.GeoSearch.GeoSearchControl({
   updateMap: true
 });
 
-map.addControl(startSearchControl);
-map.addControl(endSearchControl);
+// Add to map
+map.addControl(startSearch);
+map.addControl(endSearch);
 
-startSearchControl.on('results', function (data) {
-  if (data.results.length > 0) {
-    const result = data.results[0];
-    startCoords = [result.y, result.x];
-  }
-});
+// Capture coordinates
+map.on('geosearch/showlocation', (result) => {
+  const label = result.location.label;
+  const coords = [result.location.y, result.location.x];
 
-endSearchControl.on('results', function (data) {
-  if (data.results.length > 0) {
-    const result = data.results[0];
-    endCoords = [result.y, result.x];
+  // If StartCoords not set, set it first
+  if (!startCoords) {
+    startCoords = coords;
+    console.log('Start set to:', label);
+  } else {
+    endCoords = coords;
+    console.log('End set to:', label);
   }
 });
