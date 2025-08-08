@@ -26,21 +26,23 @@ document.getElementById("routeBtn").addEventListener("click", async () => {
       map.removeControl(control); // Remove previous route
     }
 
-    const orsRouter = new L.Routing.OpenRouteService({
-      serviceUrl: 'https://api.openrouteservice.org/v2/directions/' + travelMode,
-      profile: travelMode,
-      apiKey: 'eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6Ijg1MGJhZDI3MmU4MjQwMjJiMWJjMzA2Nzc2ZGYzYzJjIiwiaCI6Im11cm11cjY0In0='
-    });
+    const url = `https://api.openrouteservice.org/v2/directions/${travelMode}?api_key=eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6Ijg1MGJhZDI3MmU4MjQwMjJiMWJjMzA2Nzc2ZGYzYzJjIiwiaCI6Im11cm11cjY0In0=&start=${startCoords[1]},${startCoords[0]}&end=${endCoords[1]},${endCoords[0]}`;
 
-    control = L.Routing.control({
-      waypoints: [
-        L.latLng(startCoords[0], startCoords[1]),
-        L.latLng(endCoords[0], endCoords[1])
-      ],
-      router: orsRouter,
-      show: false,
-      routeWhileDragging: false
-    }).addTo(map);
+const response = await fetch(url);
+const data = await response.json();
+
+const coords = data.features[0].geometry.coordinates.map(coord => [coord[1], coord[0]]); // flip lat/lon
+
+if (control) map.removeControl(control);
+
+control = L.Routing.control({
+  waypoints: coords.map(c => L.latLng(c[0], c[1])),
+  createMarker: () => null, // no default markers
+  addWaypoints: false,
+  routeWhileDragging: false,
+  fitSelectedRoutes: true,
+  show: false
+}).addTo(map);
 
   } catch (error) {
     alert("Error: " + error.message);
