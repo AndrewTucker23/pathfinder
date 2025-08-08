@@ -43,7 +43,8 @@ control = L.Routing.control({
   addWaypoints: false,
   routeWhileDragging: false,
   fitSelectedRoutes: true,
-  show: false,
+  show: true,
+  showAlternatives: false,
   lineOptions: {
     styles: [{ color: 'red', weight: 5 }]
   }
