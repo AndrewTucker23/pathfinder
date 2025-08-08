@@ -1,3 +1,6 @@
+let startCoords = null;
+let endCoords = null;
+
 const map = L.map('map').setView([45.4215, -75.6972], 13);
 
 // Add tile layer
@@ -23,13 +26,12 @@ async function fetchCoordinates(address) {
 
 // Handle "Get Route" button
 document.getElementById("routeBtn").addEventListener("click", async () => {
-  const startAddress = document.getElementById("start").value;
-  const endAddress = document.getElementById("end").value;
-  const travelMode = document.getElementById("travelMode").value;
+ const travelMode = document.getElementById("travelMode").value;
 
-  try {
-    const startCoords = await fetchCoordinates(startAddress);
-    const endCoords = await fetchCoordinates(endAddress);
+if (!startCoords || !endCoords) {
+  alert("Please select both start and end locations.");
+  return;
+}
 
     if (control) {
       map.removeControl(control); // Remove previous route
@@ -92,15 +94,18 @@ const endSearchControl = new GeoSearch.GeoSearchControl({
 map.addControl(startSearchControl);
 map.addControl(endSearchControl);
 
-// Sync selected search result to input fields
 startSearchControl.on('results', function (data) {
   if (data.results.length > 0) {
-    document.getElementById('start').value = data.results[0].label;
+    const result = data.results[0];
+    startCoords = [result.y, result.x]; // lat, lon
+    document.getElementById('start').value = result.label;
   }
 });
 
 endSearchControl.on('results', function (data) {
   if (data.results.length > 0) {
-    document.getElementById('end').value = data.results[0].label;
+    const result = data.results[0];
+    endCoords = [result.y, result.x]; // lat, lon
+    document.getElementById('end').value = result.label;
   }
 });
