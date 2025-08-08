@@ -55,3 +55,52 @@ document.getElementById("routeBtn").addEventListener("click", async () => {
     alert("Error: " + error.message);
   }
 });
+
+// Add Photon autocomplete using GeoSearch
+const provider = new GeoSearch.PhotonProvider({
+  params: {
+    lat: 45.4215,
+    lon: -75.6972,
+    lang: 'en'
+  }
+});
+
+const startSearchControl = new GeoSearch.GeoSearchControl({
+  provider: provider,
+  style: 'bar',
+  searchLabel: 'Start Location',
+  autoComplete: true,
+  autoCompleteDelay: 250,
+  retainZoomLevel: true,
+  animateZoom: true,
+  keepResult: true,
+  updateMap: false
+});
+
+const endSearchControl = new GeoSearch.GeoSearchControl({
+  provider: provider,
+  style: 'bar',
+  searchLabel: 'End Location',
+  autoComplete: true,
+  autoCompleteDelay: 250,
+  retainZoomLevel: true,
+  animateZoom: true,
+  keepResult: true,
+  updateMap: false
+});
+
+map.addControl(startSearchControl);
+map.addControl(endSearchControl);
+
+// Sync selected search result to input fields
+startSearchControl.on('results', function (data) {
+  if (data.results.length > 0) {
+    document.getElementById('start').value = data.results[0].label;
+  }
+});
+
+endSearchControl.on('results', function (data) {
+  if (data.results.length > 0) {
+    document.getElementById('end').value = data.results[0].label;
+  }
+});
