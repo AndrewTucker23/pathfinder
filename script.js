@@ -47,14 +47,8 @@ document.getElementById("routeBtn").addEventListener("click", async () => {
   }
 });
 
-// GeoSearch: define the provider using correct constructor
-const provider = new window.GeoSearch.providers.Photon({
-  params: {
-    lat: 45.4215,
-    lon: -75.6972,
-    lang: 'en'
-  }
-});
+// ✅ Using OpenStreetMapProvider (simpler and stable)
+const provider = new window.GeoSearch.OpenStreetMapProvider();
 
 // Create search bars for Start and End
 const startSearch = new window.GeoSearch.GeoSearchControl({
@@ -90,7 +84,6 @@ map.on('geosearch/showlocation', (result) => {
   const label = result.location.label;
   const coords = [result.location.y, result.location.x];
 
-  // If StartCoords not set, set it first
   if (!startCoords) {
     startCoords = coords;
     console.log('Start set to:', label);
