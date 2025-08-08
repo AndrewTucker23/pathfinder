@@ -33,15 +33,28 @@ document.getElementById("routeBtn").addEventListener("click", async () => {
 
     const coords = data.features[0].geometry.coordinates.map(coord => [coord[1], coord[0]]); // [lat, lng]
 
-    control = L.Routing.control({
-      waypoints: coords.map(c => L.latLng(c[0], c[1])),
-      createMarker: () => null,
-      addWaypoints: false,
-      routeWhileDragging: false,
-      fitSelectedRoutes: true,
-      show: false
-    }).addTo(map);
+// Just use start and end as waypoints (not every intermediate point)
+control = L.Routing.control({
+  waypoints: [
+    L.latLng(startCoords[0], startCoords[1]),
+    L.latLng(endCoords[0], endCoords[1])
+  ],
+  createMarker: () => null,
+  addWaypoints: false,
+  routeWhileDragging: false,
+  fitSelectedRoutes: true,
+  show: false,
+  lineOptions: {
+    styles: [{ color: 'red', weight: 5 }]
+  }
+}).addTo(map);
 
+// Draw the route manually as a polyline to visualize it
+L.polyline(coords, {
+  color: 'red',
+  weight: 5,
+  opacity: 0.7
+}).addTo(map);
   } catch (error) {
     alert("Routing error: " + error.message);
   }
