@@ -89,7 +89,7 @@ const endSearchControl = new GeoSearch.GeoSearchControl({
   retainZoomLevel: true,
   animateZoom: true,
   keepResult: true,
-  updateMap: false
+  updateMap: true
 });
 
 map.addControl(startSearchControl);
